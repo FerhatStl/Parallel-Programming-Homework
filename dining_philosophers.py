@@ -2,6 +2,13 @@ import os
 import sys
 import pygame
 
+'''
+Gördüğüm kadarıyla bu kod sadece görsellerin görünmesi için yapılmış. Ayriyetten yazılan başka bir kodun buradaki chopstick
+lerin konumunu kullanma durumuna göre güncellemesi gerekiyor.
+'''
+
+
+
 # Fixes the File not found error when running from the command line.
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
