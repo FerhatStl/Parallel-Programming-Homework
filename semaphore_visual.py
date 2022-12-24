@@ -1,18 +1,19 @@
 from threading import Thread, Semaphore
 import random
 import time
+import dining_philosophers as visuals
 
 
 class DiningPhilosophers:
     def __init__(self, number_of_philosophers, meal_size=9):
-        self.meals = [meal_size for _ in range(number_of_philosophers)]
+        self.meals = [meal_size for _ in range(number_of_philosophers)] # yemekler ayarlanmış.
         self.chopsticks = [Semaphore(value=1) for _ in range(number_of_philosophers)]
         self.status = ['  T  ' for _ in range(number_of_philosophers)]
         self.chopstick_holders = ['     ' for _ in range(number_of_philosophers)]
         self.number_of_philosophers = number_of_philosophers
 
     def philosopher(self, i):
-        j = (i+1) % self.number_of_philosophers
+        j = (i + 1) % self.number_of_philosophers
         while self.meals[i] > 0:
             self.status[i] = '  T  '
             time.sleep(random.random())
@@ -43,18 +44,10 @@ def main():
     # threadleri başlatıyor.
     for philosopher in philosophers:
         philosopher.start()
-
-    # burada console da sürekli olarak görsel güncelleme yapılması sağlanmış.
-    # buna cidden ihtiyaç varmı?
     while sum(dining_philosophers.meals) > 0:
-        print("=" * (n*5))
-        print("".join(map(str, dining_philosophers.status)), " : ",
-              str(dining_philosophers.status.count('  E  ')))
-        print("".join(map(str, dining_philosophers.chopstick_holders)))
-        print("".join("{:3d}  ".format(m) for m in dining_philosophers.meals), " : ",
-              str(sum(dining_philosophers.meals)))
+        #burada console da sürekli olarak görsel güncelleme yapılması sağlanmış.
+        # buna cidden ihtiyaç varmı?
         time.sleep(0.1)
-    # threadlerin bitmesi bekleniyor.
     for philosopher in philosophers:
         philosopher.join()
 
