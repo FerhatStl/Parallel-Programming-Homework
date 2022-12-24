@@ -4,12 +4,21 @@ import time
 import dining_philosophers as visuals
 
 
+'''
+tutma durumunu kaydetme?
+
+
+'''
+
+
 class DiningPhilosophers:
     def __init__(self, number_of_philosophers, meal_size=9):
-        self.meals = [meal_size for _ in range(number_of_philosophers)] # yemekler ayarlanmış.
-        self.chopsticks = [Semaphore(value=1) for _ in range(number_of_philosophers)]
-        self.status = ['  T  ' for _ in range(number_of_philosophers)]
-        self.chopstick_holders = ['     ' for _ in range(number_of_philosophers)]
+        self.meal_sizes = [meal_size for _ in range(number_of_philosophers)] # yemekler ayarlanmış.
+        self.chopstick = [Semaphore(value=1) for _ in range(number_of_philosophers)]
+        self.status = ['WAITING' for _ in range(number_of_philosophers)]
+        #chopstick tutma listesi yeniden tanımlanmalı.
+        # yeni liste her bir stick için 1 artırıcak. 2 durumu yeme, 1 durumu tek stickle bekleme 0 durumu ise sticksiz.
+        self.chopstick_holders = [0 for _ in range(number_of_philosophers)]
         self.number_of_philosophers = number_of_philosophers
 
     def philosopher(self, i):
@@ -18,19 +27,22 @@ class DiningPhilosophers:
             self.status[i] = '  T  '
             time.sleep(random.random())
             self.status[i] = '  _  '
+            # chopstick aldığında sol tarafına alıyor ve tutmaya sol kısımı ekliyor.
             if self.chopsticks[i].acquire(timeout=1):
                 self.chopstick_holders[i] = ' /   '
+                #belli süre bekliyor.
                 time.sleep(random.random())
+                # 2. chopstick i alıyor.
                 if self.chopsticks[j].acquire(timeout=1):
-                    self.chopstick_holders[i] = ' / \\ '
-                    self.status[i] = '  E  '
-                    time.sleep(random.random())
-                    self.meals[i] -= 1
-                    self.chopsticks[j].release()
-                    self.chopstick_holders[i] = ' /   '
-                self.chopsticks[i].release()
-                self.chopstick_holders[i] = '     '
-                self.status[i] = '  T  '
+                    self.chopstick_holders[i] = ' / \\ ' #2 elle tutuyor.
+                    self.status[i] = '  E  '  # yeme durumuna geçiyor.
+                    time.sleep(random.random())  # bekliyor.
+                    self.meals[i] -= 1 # yemeği azalıyor.
+                    self.chopsticks[j].release()  # chopstick in birini bırakıyor.
+                    self.chopstick_holders[i] = ' /   '  # sağdaki gitti.
+                self.chopsticks[i].release()  # diğerini bırakıyor.
+                self.chopstick_holders[i] = '     '  # 2side yok.
+                self.status[i] = '  T  '  # boşta durumuna geçiyor.
 
 
 def main():

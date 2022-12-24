@@ -139,6 +139,7 @@ Yemeklerin altına-üstüne kalan haklar yazmalı.
 chopsticklerin muhtemel konumları kaydedilmeli. if ile kullanım belirlenmeli
 if doğru ise yemekten bir hak eksitilmeli.
 '''
+
 chopsticks = [chopstick_0, chopstick_1, chopstick_2, chopstick_3, chopstick_4]
 
 
