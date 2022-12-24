@@ -1,17 +1,10 @@
 import os
 import sys
+import time
 import pygame
-
-'''
-Gördüğüm kadarıyla bu kod sadece görsellerin görünmesi için yapılmış. Ayriyetten yazılan başka bir kodun buradaki chopstick
-lerin konumunu kullanma durumuna göre güncellemesi gerekiyor.
-'''
-
-
 
 # Fixes the File not found error when running from the command line.
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
 
 class BackgroundFurniture(pygame.sprite.Sprite):
     def __init__(self, image_file, location, scale_factor=1.0, horizontal_flip=False, vertical_flip=False):
@@ -48,8 +41,6 @@ class Character(pygame.sprite.Sprite):
         self.direction = "right"
         self.moving = False
         self.speed = 5
-
-
 class Text:
     def __init__(self, text, location, font_size=20, font_color=(0, 0, 0)):
         self.text = text
@@ -90,7 +81,6 @@ background_group.add(
         for x in range(0, WIDTH+100, 62) for y in range(0, HEIGHT+100, 46)
     ]
 )
-
 background_group.add(BackgroundFurniture("assets/carpet.png", (WIDTH//2, HEIGHT//2), 12))
 background_group.add(BackgroundFurniture("assets/fireplace.png", (WIDTH//2, 60), 4))
 background_group.add(BackgroundFurniture("assets/music_player.png", (720, 90), 4))
@@ -117,74 +107,90 @@ chair_1 = Chair("assets/chair_front_2.png", (WIDTH//2 + 40, HEIGHT//2 - 110))
 chair_2 = Chair("assets/chair_right_2.png", (WIDTH//2 + 130, HEIGHT//2 - 10))
 chair_3 = Chair("assets/chair_back_2.png", (WIDTH//2, HEIGHT//2 + 100))
 chair_4 = Chair("assets/chair_left_2.png", (WIDTH//2 - 130, HEIGHT//2 - 10))
+#philosopher_0_is_thinking = Character(6, 0, (WIDTH//2 + 10, HEIGHT//2 + 30)) #grili dede
 
-philosopher_0 = Character(6, 0, (WIDTH//2 + 10, HEIGHT//2 + 30)) # kel
-philosopher0States = [Character(6, 0, (WIDTH//2 + 10, HEIGHT//2 + 30)), Character(6, 4, (WIDTH//2 + 10, HEIGHT//2 + 30)), Character(6, 5, (WIDTH//2 + 10, HEIGHT//2 + 30))]
+#two, left, right
+philosopher_0_states = [Character(6, 0, (WIDTH//2 + 10, HEIGHT//2 + 30)), Character(6, 4, (WIDTH//2 + 10, HEIGHT//2 + 30)), Character(6, 5, (WIDTH//2 + 10, HEIGHT//2 + 30)) ]
+#philosopher_0_left_arm = Character(6, 3, (WIDTH//2 + 10, HEIGHT//2 + 30)) #grili dede
+#philosopher_0_right_arm = Character(6, 4, (WIDTH//2 + 10, HEIGHT//2 + 30)) #grili dede
 
-philosopher_1 = Character(0, 0, (WIDTH//2 + 90, HEIGHT//2 + 30)) # mavi bere
-philosopher1States = [Character(0, 0, (WIDTH//2 + 90, HEIGHT//2 + 30)), Character(0, 4, (WIDTH//2 + 90, HEIGHT//2 + 30)), Character(0, 5, (WIDTH//2 + 90, HEIGHT//2 + 30))]
+philosopher_1_states = [Character(0, 0, (WIDTH//2 + 90, HEIGHT//2 + 30)), Character(0, 4, (WIDTH//2 + 90, HEIGHT//2 + 30)), Character(0, 5, (WIDTH//2 + 90, HEIGHT//2 + 30))]
+#philosopher_1_right_arm = Character(0, 4, (WIDTH//2 + 90, HEIGHT//2 + 30))#mavi sapkalı adam
+#philosopher_1_left_arm = Character(0, 3, (WIDTH//2 + 90, HEIGHT//2 + 30))#mavi sapkalı adam
+philosopher_2_states = Character(4, -2, (WIDTH//2 + 160, HEIGHT//2 + 100)) #turuncu kafa
+philosopher_3_states = [Character(10, 1, (WIDTH//2 + 45, HEIGHT//2 + 180)), Character(10, 5, (WIDTH//2 + 45, HEIGHT//2 + 180)), Character(10, 6, (WIDTH//2 + 45, HEIGHT//2 + 180))]
+#philosopher_3_is_thinking = Character(10, 1, (WIDTH//2 + 45, HEIGHT//2 + 180)) #yesilli
+#philosopher_3_left_arm = Character(10, 5, (WIDTH//2 + 45, HEIGHT//2 + 180)) #yesilli
+#philosopher_3_right_arm = Character(10, 6, (WIDTH//2 + 45, HEIGHT//2 + 180)) #yesilli
+#philosopher_4_is_thinking = Character(2, 2, (WIDTH//2 - 65, HEIGHT//2 + 100)) #cocuk
+#philosopher_4_left_arm = Character(2, 8, (WIDTH//2 - 65, HEIGHT//2 + 100)) #cocuk
+#philosopher_4_right_arm = Character(2, 7, (WIDTH//2 - 65, HEIGHT//2 + 100)) #cocuk
+philosopher_4_states = [Character(2, 2, (WIDTH//2 - 65, HEIGHT//2 + 100)), Character(2, 8, (WIDTH//2 - 65, HEIGHT//2 + 100)), Character(2, 7, (WIDTH//2 - 65, HEIGHT//2 + 100)) ]
+#chopstick_0 = Chopstick(225, (WIDTH//2 + 0, HEIGHT//2 - 60))
 
-philosopher_2 = Character(4, -2, (WIDTH//2 + 160, HEIGHT//2 + 100)) # Turuncu saçlı
-philosopher2States = [Character(4, -2, (WIDTH//2 + 160, HEIGHT//2 + 100))]
+#two position of chopstick right or left
+chopstick_group = pygame.sprite.Group()
+chopstick_0_states = [Chopstick(190, (WIDTH//2 - 20, HEIGHT//2 - 60)),Chopstick(225, (WIDTH//2 + 0, HEIGHT//2 - 60)), Chopstick(260, (WIDTH//2 + 20 , HEIGHT//2 - 60))]
+chopstick_1_states = [Chopstick(190, (WIDTH//2 + 45, HEIGHT//2 - 60)),Chopstick(160, (WIDTH//2 + 55, HEIGHT//2 - 35)), Chopstick(160, (WIDTH//2 + 75, HEIGHT//2 - 35))]
+chopstick_2_states = [Chopstick(70, (WIDTH//2 + 20, HEIGHT//2 + 10)),Chopstick(75, (WIDTH//2 + 40, HEIGHT//2 + 10)), Chopstick(130, (WIDTH//2 + 80, HEIGHT//2 + -5))]
+chopstick_3_states = [Chopstick(-15, (WIDTH//2 - 75, HEIGHT//2 + -5)), Chopstick(15, (WIDTH//2 - 40, HEIGHT//2 + 10)), Chopstick(15, (WIDTH//2 - 20, HEIGHT//2 + 10))]
+chopstick_4_states = [Chopstick(290, (WIDTH//2 - 75, HEIGHT//2 - 35)),Chopstick(290, (WIDTH//2 - 55, HEIGHT//2 - 35)) ,Chopstick(290, (WIDTH//2 - 55, HEIGHT//2 - 35))]
 
-philosopher_3 = Character(10, 1, (WIDTH//2 + 45, HEIGHT//2 + 180)) # yeşil uzaylı
-philosopher3States = [Character(10, 1, (WIDTH//2 + 45, HEIGHT//2 + 180)), Character(10, 5, (WIDTH//2 + 45, HEIGHT//2 + 180)), Character(10, 6, (WIDTH//2 + 45, HEIGHT//2 + 180))]
+#chopstick_0 ı dinamikleştirdiğimiz için üstteki ne gerek kalmıyor array içinde yazdık.***************
+#chopstick_1 = Chopstick(160, (WIDTH//2 + 55, HEIGHT//2 - 35))#mavilinin solundaki
+#chopstick_2 = Chopstick(75, (WIDTH//2 + 40, HEIGHT//2 + 10))#turuncu kafanın solundaki
+#chopstick_3 = Chopstick(15, (WIDTH//2 - 40, HEIGHT//2 + 10))#yeşillinin solundaki
+#chopstick_4 = Chopstick(290, (WIDTH//2 - 55, HEIGHT//2 - 35)) #grili cocuğun solundaki chopstick
 
-philosopher_4 = Character(2, 2, (WIDTH//2 - 65, HEIGHT//2 + 100)) # kahverengi saçlı
-philosopher4States = [Character(2, 2, (WIDTH//2 - 65, HEIGHT//2 + 100)), Character(2, 8, (WIDTH//2 - 65, HEIGHT//2 + 100)), Character(2, 7, (WIDTH//2 - 65, HEIGHT//2 + 100)) ]
+def change_state_of_philosopphers(p_0_state=0, p_1_state=0, p_3_state=0, p_4_state=0,c_0_state=0, c_1_state=0, c_2_state=0,c_3_state=0, c_4_state=0):
+    philosopher_group.empty()
+    philosopher_group.add([
+            chair_0, chair_1, chair_2,chair_3, chair_4,
+            philosopher_0_states[p_0_state], philosopher_1_states[p_1_state], philosopher_2_states, philosopher_3_states[p_3_state],
+            philosopher_4_states[p_4_state],
+            chopstick_0_states[c_0_state], chopstick_1_states[c_1_state], chopstick_2_states[c_2_state], chopstick_3_states[c_3_state], chopstick_4_states[c_4_state]])
 
-chopstick_0 = Chopstick(225, (WIDTH//2 + 0, HEIGHT//2 - 60))
-chopstick0States = [Chopstick(190, (WIDTH//2 - 20, HEIGHT//2 - 60)), Chopstick(225, (WIDTH//2 + 0, HEIGHT//2 - 60)), Chopstick(260, (WIDTH//2 + 20, HEIGHT//2 - 60))]
 
-chopstick_1 = Chopstick(160, (WIDTH//2 + 55, HEIGHT//2 - 35))
-chopstick1States = [Chopstick(190, (WIDTH//2 + 45, HEIGHT//2 - 60)), Chopstick(160, (WIDTH//2 + 55, HEIGHT//2 - 35)), Chopstick(160, (WIDTH//2 + 75, HEIGHT//2 - 35))]
 
-chopstick_2 = Chopstick(75, (WIDTH//2 + 40, HEIGHT//2 + 10))
-chopstick2States = [Chopstick(70, (WIDTH//2 + 20, HEIGHT//2 + 10)), Chopstick(75, (WIDTH//2 + 40, HEIGHT//2 + 10)), Chopstick(130, (WIDTH//2 + 80, HEIGHT//2 + -5))]
+   # return p_group_array
 
-chopstick_3 = Chopstick(15, (WIDTH//2 - 40, HEIGHT//2 + 10))
-chopstick3States = [Chopstick(-15, (WIDTH//2 - 75, HEIGHT//2 + -5)), Chopstick(15, (WIDTH//2 - 40, HEIGHT//2 + 10)), Chopstick(15, (WIDTH//2 - 20, HEIGHT//2 + 10))]
-
-chopstick_4 = Chopstick(290, (WIDTH//2 - 55, HEIGHT//2 - 35))
-chopstick4States = [Chopstick(290, (WIDTH//2 - 75, HEIGHT//2 - 35)), Chopstick(290, (WIDTH//2 - 55, HEIGHT//2 - 35)), Chopstick(290, (WIDTH//2 - 55, HEIGHT//2 - 35))]
-
-philosopher_group.add(
-    [
-        chair_0, chair_1, chair_2, chair_4,
-        philosopher_0,
-        philosopher_1,
-        philosopher_2,
-        philosopher_3,
-        philosopher_4,
-        chair_3,
-        chopstick_0, chopstick_1, chopstick_2, chopstick_3, chopstick_4
-    ]
-)
-'''
-Yemeklerin altına-üstüne kalan haklar yazmalı.
-chopsticklerin muhtemel konumları kaydedilmeli. if ile kullanım belirlenmeli
-if doğru ise yemekten bir hak eksitilmeli.
-'''
-
-chopsticks = [chopstick_0, chopstick_1, chopstick_2, chopstick_3, chopstick_4]
-philosophers = [philosopher_0,
-                philosopher_1,
-                philosopher_2,
-                philosopher_3,
-                philosopher_4]
-
+i = 0
+j = 0
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == pygame.MOUSEBUTTONUP:
-            pass
-
 
     background_group.draw(screen)
     screen.blit(title_text.text_surface, title_text.text_rect)
     meal_group.draw(screen)
+    #philosopher_group.add(change_state_of_philosopphers(i))
+    change_state_of_philosopphers(i, i, i, i, j,j,j,j,j)
+    #change_state_of_chopstick(i,i,i,i,i)******************
     philosopher_group.draw(screen)
+
+    pygame.display.update()
+    time.sleep(2)
+    i += 1
+    i = i % 3
+    time.sleep(2)
+    j += 1
+    j = j%3
+    time.sleep(2)
+
+
+    #philosopher_group.add(change_state_of_philosopphers(i))
+    change_state_of_philosopphers(i, i, i, i, j,j,j,j,j)
+    philosopher_group.draw(screen)
+    chopstick_group.draw(screen)
     pygame.display.update()
     clock.tick(60)
+
+
+
+
+
+
+
+
