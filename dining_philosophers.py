@@ -146,7 +146,7 @@ philosopher4States = [Character(2, 2, (WIDTH // 2 - 65, HEIGHT // 2 + 100)),
                       Character(2, 7, (WIDTH // 2 - 65, HEIGHT // 2 + 100))]
 
 chopstick_0 = Chopstick(225, (WIDTH // 2 + 0, HEIGHT // 2 - 60))
-chopstick0States = [Chopstick(190, (WIDTH // 2 - 20, HEIGHT // 2 - 60)), # 0ın SOL EL
+chopstick0States = [Chopstick(190, (WIDTH // 2 - 20, HEIGHT // 2 - 60)), # 0ın SOL EL (ihtiyar)
                     Chopstick(225, (WIDTH // 2 + 0, HEIGHT // 2 - 60)), # 0 ın solundakinin normal konumu
                     Chopstick(260, (WIDTH // 2 + 20, HEIGHT // 2 - 60))] # mavilinin sağ eli
 
@@ -182,19 +182,16 @@ chopstick_test = Chopstick(290, (WIDTH // 2 - 75, HEIGHT // 2 - 35))
 
 # ÇALIŞMA ALANI
 #liste de sol1,sağ1,sol2,sağ2 şeklinde ilerlicez.
-chopsticklist = [Chopstick(190, (WIDTH // 2 - 20, HEIGHT // 2 - 60)),  # 0sol
+chopsticklist = [Chopstick(190, (WIDTH // 2 - 20, HEIGHT // 2 - 60)),  # 0sol ihtiyar
                  Chopstick(250, (WIDTH // 2 - 55, HEIGHT // 2 - 65)),  # 0sağ
                  Chopstick(190, (WIDTH // 2 + 45, HEIGHT // 2 - 60)),  # 1sol mavi bere
                  Chopstick(260, (WIDTH // 2 + 20, HEIGHT // 2 - 60)),  # 1sağ
-                 Chopstick(130, (WIDTH // 2 + 80, HEIGHT // 2 + -5)),  # 2sol
+                 Chopstick(130, (WIDTH // 2 + 80, HEIGHT // 2 + -5)),  # 2sol turuncu
                  Chopstick(160, (WIDTH // 2 + 75, HEIGHT // 2 - 35)),  # 2sağ
-
-
-
-
-
-
-
+                 Chopstick(15, (WIDTH // 2 - 20, HEIGHT // 2 + 10)),   # 3sol yeşil
+                 Chopstick(70, (WIDTH // 2 + 20, HEIGHT // 2 + 10)),   # 3sağ
+                 Chopstick(290, (WIDTH // 2 - 75, HEIGHT // 2 - 35)),  # 4sol kahverengi
+                 Chopstick(-15, (WIDTH // 2 - 75, HEIGHT // 2 + -5))  # 4sağ
 
                  ]
 
