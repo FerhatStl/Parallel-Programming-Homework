@@ -281,5 +281,5 @@ async def semaphore_main():
 
 
 if __name__ == "__main__":
-    asyncio.run(visual_main())
-    asyncio.run(semaphore_main())
+    Thread(target= visual_main()).start()
+    Thread(target= semaphore_main()).start()
