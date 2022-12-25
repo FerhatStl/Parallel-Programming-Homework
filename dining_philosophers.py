@@ -177,12 +177,26 @@ chopstick_alpha = Chopstick(45, (WIDTH // 2 - 0, HEIGHT // 2 - 0))
 # Height2 yi arttırmak aşağıya ve Width/2 yi arttırmak sağa gitmesi demek.
 
 # bu aşağıdaki 2 taneyi kullanmayacağız o7
-chopstick_philosopher3_left = Chopstick(35, (WIDTH // 2 -20, HEIGHT // 2 + 30)) # yeşil uzaylı
-chopstick_philosopher3_right = Chopstick(65, (WIDTH // 2 + 20, HEIGHT // 2 + 30))
 # bununla konumları test ettim hangisinin hangisi olduğunu artık biliyoruz.
 chopstick_test = Chopstick(290, (WIDTH // 2 - 75, HEIGHT // 2 - 35))
 
+# ÇALIŞMA ALANI
+#liste de sol1,sağ1,sol2,sağ2 şeklinde ilerlicez.
+chopsticklist = [Chopstick(190, (WIDTH // 2 - 20, HEIGHT // 2 - 60)),  # 0sol
+                 Chopstick(250, (WIDTH // 2 - 55, HEIGHT // 2 - 65)),  # 0sağ
+                 Chopstick(190, (WIDTH // 2 + 45, HEIGHT // 2 - 60)),  # 1sol mavi bere
+                 Chopstick(260, (WIDTH // 2 + 20, HEIGHT // 2 - 60)),  # 1sağ
+                 Chopstick(130, (WIDTH // 2 + 80, HEIGHT // 2 + -5)),  # 2sol
+                 Chopstick(160, (WIDTH // 2 + 75, HEIGHT // 2 - 35)),  # 2sağ
 
+
+
+
+
+
+
+
+                 ]
 
 
 
