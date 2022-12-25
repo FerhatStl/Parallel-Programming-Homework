@@ -1,6 +1,9 @@
 import os
 import sys
+import time
+
 import pygame
+import asyncio
 
 '''
 Gördüğüm kadarıyla bu kod sadece görsellerin görünmesi için yapılmış. Ayriyetten yazılan başka bir kodun buradaki chopstick
@@ -182,7 +185,7 @@ chopstick_test = Chopstick(290, (WIDTH // 2 - 75, HEIGHT // 2 - 35))
 
 # ÇALIŞMA ALANI
 #liste de sol1,sağ1,sol2,sağ2 şeklinde ilerlicez.
-chopsticklist = [Chopstick(190, (WIDTH // 2 - 20, HEIGHT // 2 - 60)),  # 0sol ihtiyar
+chopsticklist = [Chopstick(190, (WIDTH // 2 - 20, HEIGHT // 2 - 60)),  # 0sol
                  Chopstick(250, (WIDTH // 2 - 55, HEIGHT // 2 - 65)),  # 0sağ
                  Chopstick(190, (WIDTH // 2 + 45, HEIGHT // 2 - 60)),  # 1sol mavi bere
                  Chopstick(260, (WIDTH // 2 + 20, HEIGHT // 2 - 60)),  # 1sağ
@@ -216,29 +219,39 @@ Yemeklerin altına-üstüne kalan haklar yazmalı.
 chopsticklerin muhtemel konumları kaydedilmeli. if ile kullanım belirlenmeli
 if doğru ise yemekten bir hak eksitilmeli.
 '''
-
-chopsticks = [chopstick_0, chopstick_1, chopstick_2, chopstick_3, chopstick_4]
+chopstick_group = pygame.sprite.Group()
+chopstick_group.add([chopstick_0, chopstick_1, chopstick_2, chopstick_3, chopstick_4])
 philosophers = [philosopher_0,
                 philosopher_1,
                 philosopher_2,
                 philosopher_3,
                 philosopher_4]
 
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        if event.type == pygame.MOUSEBUTTONUP:
-            pass
-    background_group.draw(screen)
-    screen.blit(title_text.text_surface, title_text.text_rect)
-    meal_group.draw(screen)
-    philosopher_group.draw(screen)
-    #screen.blit(meal0_size.text_surface, meal0_size.text_rect)
-    #screen.blit(meal1_size.text_surface, meal1_size.text_rect)
-    #screen.blit(meal2_size.text_surface, meal2_size.text_rect)
-    #screen.blit(meal3_size.text_surface, meal3_size.text_rect)
-    #screen.blit(meal4_size.text_surface, meal4_size.text_rect)
-    pygame.display.update()
-    clock.tick(60)
+# Bir chopstick in aktif olup olmama durumu listesi. Chopstickler buna göre çizilecek.
+chopstick_activity_list = [0 for _ in range(len(chopsticklist))]
+
+
+async def visual_main():
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONUP:
+                pass
+        background_group.draw(screen)
+        screen.blit(title_text.text_surface, title_text.text_rect)
+        meal_group.draw(screen)
+        philosopher_group.draw(screen)
+        chopstick_group.draw(screen)
+        pygame.display.update()
+        clock.tick(60)
+
+#async def semaphore_main():
+
+
+
+
+if __name__ == "__main__":
+    asyncio.run(visual_main())
+    #asyncio.run(semaphore_main())
