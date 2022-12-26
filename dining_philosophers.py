@@ -136,17 +136,7 @@ chopstick_3 = Chopstick(15, (WIDTH // 2 - 40, HEIGHT // 2 + 10))
 chopstick_4 = Chopstick(290, (WIDTH // 2 - 55, HEIGHT // 2 - 35))
 chopsticks = [chopstick_0, chopstick_1, chopstick_2, chopstick_3, chopstick_4]
 
-# TEST ALANI
-# chopstick_alpha = Chopstick(45, (WIDTH // 2 - 0, HEIGHT // 2 - 0))
-# Chopsticklerde rotasyona 45 diyince sola 45 derece dönüyor ve tam yukarı bakıyor.
-# 225 ise tam sağa bakıyor.
-# Height2 yi arttırmak aşağıya ve Width/2 yi arttırmak sağa gitmesi demek.
 
-# bu aşağıdaki 2 taneyi kullanmayacağız o7
-# bununla konumları test ettim hangisinin hangisi olduğunu artık biliyoruz.
-
-# ÇALIŞMA ALANI
-# liste de sol1,sağ1,sol2,sağ2 şeklinde ilerlicez.
 chopstick_list = [Chopstick(190, (WIDTH // 2 - 20, HEIGHT // 2 - 60)),  # 0sol
                   Chopstick(250, (WIDTH // 2 - 55, HEIGHT // 2 - 65)),  # 0sağ
                   Chopstick(190, (WIDTH // 2 + 45, HEIGHT // 2 - 60)),  # 1sol mavi bere
@@ -165,11 +155,6 @@ philosopher_group.add(
         philosopher_0, philosopher_1, philosopher_2, philosopher_3, philosopher_4,
     ]
 )
-'''
-Yemeklerin altına-üstüne kalan haklar yazmalı.
-chopsticklerin muhtemel konumları kaydedilmeli. if ile kullanım belirlenmeli
-if doğru ise yemekten bir hak eksitilmeli.
-'''
 
 chopstick_group = pygame.sprite.Group()
 chopstick_group.add([chopstick_0, chopstick_1, chopstick_2, chopstick_3, chopstick_4])
@@ -178,6 +163,7 @@ philosophers = [philosopher_0,
                 philosopher_2,
                 philosopher_3,
                 philosopher_4]
+
 
 # Bir chopstick in aktif olup olmama durumu listesi. Chopstickler buna göre çizilecek.
 chopstick_activity_list = [0 for _ in range(len(chopstick_list))]
