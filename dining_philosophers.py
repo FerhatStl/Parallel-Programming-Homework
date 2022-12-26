@@ -60,6 +60,9 @@ class Text:
         self.text_surface = self.font.render(self.text, True, font_color)
         self.text_rect = self.text_surface.get_rect(center=location)
 
+    def update_text(self, newstring):
+        self.text = newstring
+
 
 class Meal(pygame.sprite.Sprite):
     def __init__(self, location):
@@ -113,12 +116,6 @@ meal_4 = Meal((WIDTH // 2 - 60, HEIGHT // 2 - 15))
 meal_group = pygame.sprite.Group()
 meal_group.add([meal_0, meal_1, meal_2, meal_3, meal_4])
 
-meal0_size = Text("TEXT", (WIDTH // 2 - 40, HEIGHT // 2 - 50), 10, (0, 0, 0))
-meal1_size = Text("TEXT", (WIDTH // 2 + 40, HEIGHT // 2 - 50), 10, (0, 0, 0))
-meal2_size = Text("TEXT", (WIDTH // 2 + 60, HEIGHT // 2 - 15), 10, (0, 0, 0))
-meal3_size = Text("TEXT", (WIDTH // 2 + 0, HEIGHT // 2 - 10), 10, (0, 0, 0))
-meal4_size = Text("TEXT", (WIDTH // 2 - 60, HEIGHT // 2 - 15), 10, (0, 0, 0))
-
 philosopher_group = pygame.sprite.Group()
 chair_0 = Chair("assets/chair_front_2.png", (WIDTH // 2 - 40, HEIGHT // 2 - 110))
 chair_1 = Chair("assets/chair_front_2.png", (WIDTH // 2 + 40, HEIGHT // 2 - 110))
@@ -140,7 +137,7 @@ chopstick_4 = Chopstick(290, (WIDTH // 2 - 55, HEIGHT // 2 - 35))
 chopsticks = [chopstick_0, chopstick_1, chopstick_2, chopstick_3, chopstick_4]
 
 # TEST ALANI
-#chopstick_alpha = Chopstick(45, (WIDTH // 2 - 0, HEIGHT // 2 - 0))
+# chopstick_alpha = Chopstick(45, (WIDTH // 2 - 0, HEIGHT // 2 - 0))
 # Chopsticklerde rotasyona 45 diyince sola 45 derece dönüyor ve tam yukarı bakıyor.
 # 225 ise tam sağa bakıyor.
 # Height2 yi arttırmak aşağıya ve Width/2 yi arttırmak sağa gitmesi demek.
@@ -184,11 +181,11 @@ philosophers = [philosopher_0,
 
 # Bir chopstick in aktif olup olmama durumu listesi. Chopstickler buna göre çizilecek.
 chopstick_activity_list = [0 for _ in range(len(chopstick_list))]
-active_chopstick_group = pygame.sprite.Group()
+
 
 class DiningPhilosophers:
     def __init__(self, number_of_philosophers, meal_size=9):
-        self.meals = [meal_size for _ in range(number_of_philosophers)]  # yemekler ayarlanmış.
+        self.meals = [meal_size for _ in range(number_of_philosophers)]  # yemekler ayarlandı.
         self.chopsticks = [Semaphore(value=1) for _ in range(len(chopsticks))]
         self.status = ['WAITING' for _ in range(number_of_philosophers)]
         # yeni liste her bir stick için 1 artırıcak. 2 durumu yeme, 1 durumu tek stickle bekleme 0 durumu ise sticksiz.
@@ -205,7 +202,7 @@ class DiningPhilosophers:
             # chopstick aldığında sol tarafına alıyor ve tutmaya sol kısımı ekliyor.
             if self.chopsticks[i].acquire(timeout=1):
                 self.chopstick_holders[i] += 1
-                chopstick_activity_list[i*2] = 1 # SOLUNA CHOPSTICK GELMELİ
+                chopstick_activity_list[i * 2] = 1  # SOLUNA CHOPSTICK GELMELİ
                 time.sleep(random.random())
                 # 2. chopstick i alıyor.
                 if self.chopsticks[j].acquire(timeout=1):
@@ -227,12 +224,9 @@ def main():
     n = 5
     m = 7
     dining_philosophers = DiningPhilosophers(n, m)
-    # philosphers listesi içine filozoflar kadar thread oluşturuyor.
     philosophers = [Thread(target=dining_philosophers.philosopher, args=(i,)) for i in range(n)]
     for philosopher in philosophers:
         philosopher.start()
-    # burada console da sürekli olarak görsel güncelleme yapılması sağlanmış.
-    # buna cidden ihtiyaç varmı?
     while sum(dining_philosophers.meals) > 0:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -240,7 +234,7 @@ def main():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONUP:
                 pass
-        # chopstickleri her seferinde kontrol edip ekleyecek kısım
+
         active_chopstick_group = pygame.sprite.Group()
         for i in range(len(chopstick_list)):
             if chopstick_activity_list[i] == 1:
@@ -251,19 +245,45 @@ def main():
         philosopher_group.draw(screen)
         # chopstick_group.draw(screen) # chopsticklerin asıl yerini çizer.
         active_chopstick_group.draw(screen)  # chopsticklerin o anki konumlarını çizer.
+
+
+
+
+
+        meal0_size = Text(str(dining_philosophers.meals[0]), (WIDTH // 2 - 40, HEIGHT // 2 - 50), 15, (0, 0, 0))
+        meal1_size = Text(str(dining_philosophers.meals[1]), (WIDTH // 2 + 40, HEIGHT // 2 - 50), 15, (0, 0, 0))
+        meal2_size = Text(str(dining_philosophers.meals[2]), (WIDTH // 2 + 60, HEIGHT // 2 - 15), 15, (0, 0, 0))
+        meal3_size = Text(str(dining_philosophers.meals[3]), (WIDTH // 2 + 0, HEIGHT // 2 - 10), 15, (0, 0, 0))
+        meal4_size = Text(str(dining_philosophers.meals[4]), (WIDTH // 2 - 60, HEIGHT // 2 - 15), 15, (0, 0, 0))
+        mealsize_group = [meal0_size, meal1_size, meal2_size, meal3_size, meal4_size]
+        for i in mealsize_group:
+            screen.blit(i.text_surface, i.text_rect)
         pygame.display.update()
         clock.tick(60)
+
+
+
+
+
+
+
+
+
+
         print("=" * (n * 5))
         print("".join(map(str, dining_philosophers.status)), " : ",
               str(dining_philosophers.status.count('  E  ')))
         print("".join(map(str, dining_philosophers.chopstick_holders)))
         print("".join("{:3d}  ".format(m) for m in dining_philosophers.meals), " : ",
               str(sum(dining_philosophers.meals)))
-        time.sleep(1)
-    # threadlerin bitmesi bekleniyor.
+
+        time.sleep(0.1)
+
+
+
     for philosopher in philosophers:
         philosopher.join()
 
 
 if __name__ == "__main__":
-   main()
+    main()
