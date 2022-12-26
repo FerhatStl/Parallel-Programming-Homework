@@ -2,15 +2,10 @@ import os
 import random
 import sys
 import time
-from threading import Semaphore, Thread
+from threading import Thread, Lock
 
 import pygame
-import asyncio
 
-'''
-Gördüğüm kadarıyla bu kod sadece görsellerin görünmesi için yapılmış. Ayriyetten yazılan başka bir kodun buradaki chopstick
-lerin konumunu kullanma durumuna göre güncellemesi gerekiyor.
-'''
 
 # Fixes the File not found error when running from the command line.
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -136,7 +131,6 @@ chopstick_3 = Chopstick(15, (WIDTH // 2 - 40, HEIGHT // 2 + 10))
 chopstick_4 = Chopstick(290, (WIDTH // 2 - 55, HEIGHT // 2 - 35))
 chopsticks = [chopstick_0, chopstick_1, chopstick_2, chopstick_3, chopstick_4]
 
-
 chopstick_list = [Chopstick(190, (WIDTH // 2 - 20, HEIGHT // 2 - 60)),  # 0sol
                   Chopstick(250, (WIDTH // 2 - 55, HEIGHT // 2 - 65)),  # 0sağ
                   Chopstick(190, (WIDTH // 2 + 45, HEIGHT // 2 - 60)),  # 1sol mavi bere
@@ -164,53 +158,53 @@ philosophers = [philosopher_0,
                 philosopher_3,
                 philosopher_4]
 
-
-# Bir chopstick in aktif olup olmama durumu listesi. Chopstickler buna göre çizilecek.
 chopstick_activity_list = [0 for _ in range(len(chopstick_list))]
-
 
 class DiningPhilosophers:
     def __init__(self, number_of_philosophers, meal_size=9):
-        self.meals = [meal_size for _ in range(number_of_philosophers)]  # yemekler ayarlandı.
-        self.chopsticks = [Semaphore(value=1) for _ in range(len(chopsticks))]
-        self.status = ['  T  ' for _ in range(number_of_philosophers)]# yeni liste her bir stick için 1 artırıcak. 2 durumu yeme, 1 durumu tek stickle bekleme 0 durumu ise sticksiz.
+        self.meals = [meal_size for _ in range(number_of_philosophers)]
+        self.chopsticks = [Lock() for _ in range(len(chopsticks))]
+        self.status = ['  T  ' for _ in range(number_of_philosophers)]
         self.chopstick_holders = ['     ' for _ in range(number_of_philosophers)]
         self.number_of_philosophers = number_of_philosophers
 
     def philosopher(self, i):
-        # j neyi sayıyor bilmiyorum
         j = (i + 1) % self.number_of_philosophers
         while self.meals[i] > 0:
             self.status[i] = '  T  '
             time.sleep(random.random())
             self.status[i] = '  _  '
-            # chopstick aldığında sol tarafına alıyor ve tutmaya sol kısımı ekliyor.
-            if self.chopsticks[i].acquire(timeout=1):
+            if not self.chopsticks[i].locked():
+                self.chopsticks[i].acquire()
                 self.chopstick_holders[i] = ' /   '
-                chopstick_activity_list[i * 2] = 1  # SOLUNA CHOPSTICK GELMELİ
+                chopstick_activity_list[i * 2] = 1
                 time.sleep(random.random())
-                # 2. chopstick i alıyor.
-                if self.chopsticks[j].acquire(timeout=1):
-                    self.chopstick_holders[i] = ' / \\ '
+                if not self.chopsticks[j].locked():
+                    self.chopsticks[j].acquire()
                     chopstick_activity_list[(i * 2) + 1] = 1
-                    self.status[i] = '  E  '  # yeme durumuna geçiyor.
+                    self.chopstick_holders[i] = ' / \\ '
+                    self.status[i] = '  E  '
                     time.sleep(random.random())
-                    self.meals[i] -= 1  # yemeği azalıyor.
-                    self.chopsticks[j].release()  # chopstick in birini bırakıyor.
+                    self.meals[i] -= 1
+                    self.chopsticks[j].release()
                     chopstick_activity_list[(i * 2) + 1] = 0
-                    self.chopstick_holders[i] = ' /   '
-                self.chopsticks[i].release()  # diğerini bırakıyor.
-                self.chopstick_holders[i] = '     '
-                chopstick_activity_list[i * 2] = 0
-                self.status[i] = '  T  '  # boşta durumuna geçiyor.
+                    self.chopstick_holders[i] = '     '
+                    self.chopsticks[i].release()
+                    chopstick_activity_list[i * 2] = 0
+                    self.chopstick_holders[i] = '     '
+                    self.status[i] = '  T  '
+                else:
+                    self.chopsticks[i].release()
+                    chopstick_activity_list[i * 2] = 0
+                    self.chopstick_holders[i] = '     '
 
 
 def main():
     n = 5
     m = 7
     dining_philosophers = DiningPhilosophers(n, m)
-    philosophers = [Thread(target=dining_philosophers.philosopher, args=(i,)) for i in range(n)]
-    for philosopher in philosophers:
+    philosopher_threads = [Thread(target=dining_philosophers.philosopher, args=(i,)) for i in range(n)]
+    for philosopher in philosopher_threads:
         philosopher.start()
     while sum(dining_philosophers.meals) > 0:
         for event in pygame.event.get():
@@ -228,9 +222,7 @@ def main():
         screen.blit(title_text.text_surface, title_text.text_rect)
         meal_group.draw(screen)
         philosopher_group.draw(screen)
-        # chopstick_group.draw(screen) # chopsticklerin asıl yerini çizer.
-        active_chopstick_group.draw(screen)  # chopsticklerin o anki konumlarını çizer.
-
+        active_chopstick_group.draw(screen)
         meal0_size = Text(str(dining_philosophers.meals[0]), (WIDTH // 2 - 40, HEIGHT // 2 - 50), 15, (0, 0, 0))
         meal1_size = Text(str(dining_philosophers.meals[1]), (WIDTH // 2 + 40, HEIGHT // 2 - 50), 15, (0, 0, 0))
         meal2_size = Text(str(dining_philosophers.meals[2]), (WIDTH // 2 + 60, HEIGHT // 2 - 15), 15, (0, 0, 0))
@@ -242,16 +234,15 @@ def main():
             screen.blit(i.text_surface, i.text_rect)
         pygame.display.update()
         clock.tick(60)
+
         print("=" * (n * 5))
         print("".join(map(str, dining_philosophers.status)), " : ",
               str(dining_philosophers.status.count('  E  ')))
         print("".join(map(str, dining_philosophers.chopstick_holders)))
         print("".join("{:3d}  ".format(m) for m in dining_philosophers.meals), " : ",
               str(sum(dining_philosophers.meals)))
-
         time.sleep(0.1)
-
-    for philosopher in philosophers:
+    for philosopher in philosopher_threads:
         philosopher.join()
 
 
