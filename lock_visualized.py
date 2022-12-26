@@ -3,9 +3,11 @@ import random
 import sys
 import time
 from threading import Thread, Lock
-
 import pygame
 
+# 190316046 Ferhat ÇELİK
+# 190316051 Tuğçe DURMAZ
+# 190316068 Ahmet Furkan AKDAMAR
 
 # Fixes the File not found error when running from the command line.
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
