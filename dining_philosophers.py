@@ -187,9 +187,8 @@ class DiningPhilosophers:
     def __init__(self, number_of_philosophers, meal_size=9):
         self.meals = [meal_size for _ in range(number_of_philosophers)]  # yemekler ayarlandı.
         self.chopsticks = [Semaphore(value=1) for _ in range(len(chopsticks))]
-        self.status = ['WAITING' for _ in range(number_of_philosophers)]
-        # yeni liste her bir stick için 1 artırıcak. 2 durumu yeme, 1 durumu tek stickle bekleme 0 durumu ise sticksiz.
-        self.chopstick_holders = [0 for _ in range(number_of_philosophers)]
+        self.status = ['WAITING' for _ in range(number_of_philosophers)]# yeni liste her bir stick için 1 artırıcak. 2 durumu yeme, 1 durumu tek stickle bekleme 0 durumu ise sticksiz.
+        self.chopstick_holders = ['     ' for _ in range(number_of_philosophers)]
         self.number_of_philosophers = number_of_philosophers
 
     def philosopher(self, i):
@@ -201,21 +200,21 @@ class DiningPhilosophers:
             self.status[i] = '  _  '
             # chopstick aldığında sol tarafına alıyor ve tutmaya sol kısımı ekliyor.
             if self.chopsticks[i].acquire(timeout=1):
-                self.chopstick_holders[i] += 1
+                self.chopstick_holders[i] = ' /   '
                 chopstick_activity_list[i * 2] = 1  # SOLUNA CHOPSTICK GELMELİ
                 time.sleep(random.random())
                 # 2. chopstick i alıyor.
                 if self.chopsticks[j].acquire(timeout=1):
-                    self.chopstick_holders[i] += 1
+                    self.chopstick_holders[i] = ' / \\ '
                     chopstick_activity_list[(i * 2) + 1] = 1
                     self.status[i] = '  E  '  # yeme durumuna geçiyor.
                     time.sleep(random.random())
                     self.meals[i] -= 1  # yemeği azalıyor.
                     self.chopsticks[j].release()  # chopstick in birini bırakıyor.
                     chopstick_activity_list[(i * 2) + 1] = 0
-                    self.chopstick_holders[i] -= 1
+                    self.chopstick_holders[i] = ' /   '
                 self.chopsticks[i].release()  # diğerini bırakıyor.
-                self.chopstick_holders[i] = 0
+                self.chopstick_holders[i] = '     '
                 chopstick_activity_list[i * 2] = 0
                 self.status[i] = '  T  '  # boşta durumuna geçiyor.
 
@@ -246,30 +245,17 @@ def main():
         # chopstick_group.draw(screen) # chopsticklerin asıl yerini çizer.
         active_chopstick_group.draw(screen)  # chopsticklerin o anki konumlarını çizer.
 
-
-
-
-
         meal0_size = Text(str(dining_philosophers.meals[0]), (WIDTH // 2 - 40, HEIGHT // 2 - 50), 15, (0, 0, 0))
         meal1_size = Text(str(dining_philosophers.meals[1]), (WIDTH // 2 + 40, HEIGHT // 2 - 50), 15, (0, 0, 0))
         meal2_size = Text(str(dining_philosophers.meals[2]), (WIDTH // 2 + 60, HEIGHT // 2 - 15), 15, (0, 0, 0))
         meal3_size = Text(str(dining_philosophers.meals[3]), (WIDTH // 2 + 0, HEIGHT // 2 - 10), 15, (0, 0, 0))
         meal4_size = Text(str(dining_philosophers.meals[4]), (WIDTH // 2 - 60, HEIGHT // 2 - 15), 15, (0, 0, 0))
-        mealsize_group = [meal0_size, meal1_size, meal2_size, meal3_size, meal4_size]
-        for i in mealsize_group:
+        meal_size_group = [meal0_size, meal1_size, meal2_size, meal3_size, meal4_size]
+
+        for i in meal_size_group:
             screen.blit(i.text_surface, i.text_rect)
         pygame.display.update()
         clock.tick(60)
-
-
-
-
-
-
-
-
-
-
         print("=" * (n * 5))
         print("".join(map(str, dining_philosophers.status)), " : ",
               str(dining_philosophers.status.count('  E  ')))
@@ -278,8 +264,6 @@ def main():
               str(sum(dining_philosophers.meals)))
 
         time.sleep(0.1)
-
-
 
     for philosopher in philosophers:
         philosopher.join()
