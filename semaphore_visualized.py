@@ -2,10 +2,9 @@ import os
 import random
 import sys
 import time
-from threading import Thread, Lock
+from threading import Semaphore, Thread
 
 import pygame
-
 
 # Fixes the File not found error when running from the command line.
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -131,6 +130,7 @@ chopstick_3 = Chopstick(15, (WIDTH // 2 - 40, HEIGHT // 2 + 10))
 chopstick_4 = Chopstick(290, (WIDTH // 2 - 55, HEIGHT // 2 - 35))
 chopsticks = [chopstick_0, chopstick_1, chopstick_2, chopstick_3, chopstick_4]
 
+
 chopstick_list = [Chopstick(190, (WIDTH // 2 - 20, HEIGHT // 2 - 60)),  # 0sol
                   Chopstick(250, (WIDTH // 2 - 55, HEIGHT // 2 - 65)),  # 0sağ
                   Chopstick(190, (WIDTH // 2 + 45, HEIGHT // 2 - 60)),  # 1sol mavi bere
@@ -164,7 +164,7 @@ chopstick_activity_list = [0 for _ in range(len(chopstick_list))]
 class DiningPhilosophers:
     def __init__(self, number_of_philosophers, meal_size=9):
         self.meals = [meal_size for _ in range(number_of_philosophers)]
-        self.chopsticks = [Lock() for _ in range(len(chopsticks))]
+        self.chopsticks = [Semaphore(value=1) for _ in range(len(chopsticks))]
         self.status = ['  T  ' for _ in range(number_of_philosophers)]
         self.chopstick_holders = ['     ' for _ in range(number_of_philosophers)]
         self.number_of_philosophers = number_of_philosophers
@@ -175,29 +175,23 @@ class DiningPhilosophers:
             self.status[i] = '  T  '
             time.sleep(random.random())
             self.status[i] = '  _  '
-            if not self.chopsticks[i].locked():
-                self.chopsticks[i].acquire()
+            if self.chopsticks[i].acquire(timeout=1):
                 self.chopstick_holders[i] = ' /   '
                 chopstick_activity_list[i * 2] = 1
                 time.sleep(random.random())
-                if not self.chopsticks[j].locked():
-                    self.chopsticks[j].acquire()
-                    chopstick_activity_list[(i * 2) + 1] = 1
+                if self.chopsticks[j].acquire(timeout=1):
                     self.chopstick_holders[i] = ' / \\ '
+                    chopstick_activity_list[(i * 2) + 1] = 1
                     self.status[i] = '  E  '
                     time.sleep(random.random())
                     self.meals[i] -= 1
                     self.chopsticks[j].release()
                     chopstick_activity_list[(i * 2) + 1] = 0
-                    self.chopstick_holders[i] = '     '
-                    self.chopsticks[i].release()
-                    chopstick_activity_list[i * 2] = 0
-                    self.chopstick_holders[i] = '     '
-                    self.status[i] = '  T  '
-                else:
-                    self.chopsticks[i].release()
-                    chopstick_activity_list[i * 2] = 0
-                    self.chopstick_holders[i] = '     '
+                    self.chopstick_holders[i] = ' /   '
+                self.chopsticks[i].release()
+                self.chopstick_holders[i] = '     '
+                chopstick_activity_list[i * 2] = 0
+                self.status[i] = '  T  '
 
 
 def main():
@@ -224,6 +218,7 @@ def main():
         meal_group.draw(screen)
         philosopher_group.draw(screen)
         active_chopstick_group.draw(screen)
+
         meal0_size = Text(str(dining_philosophers.meals[0]), (WIDTH // 2 - 40, HEIGHT // 2 - 50), 15, (0, 0, 0))
         meal1_size = Text(str(dining_philosophers.meals[1]), (WIDTH // 2 + 40, HEIGHT // 2 - 50), 15, (0, 0, 0))
         meal2_size = Text(str(dining_philosophers.meals[2]), (WIDTH // 2 + 60, HEIGHT // 2 - 15), 15, (0, 0, 0))
@@ -235,14 +230,15 @@ def main():
             screen.blit(i.text_surface, i.text_rect)
         pygame.display.update()
         clock.tick(60)
-
         print("=" * (n * 5))
         print("".join(map(str, dining_philosophers.status)), " : ",
               str(dining_philosophers.status.count('  E  ')))
         print("".join(map(str, dining_philosophers.chopstick_holders)))
         print("".join("{:3d}  ".format(m) for m in dining_philosophers.meals), " : ",
               str(sum(dining_philosophers.meals)))
+
         time.sleep(0.1)
+
     for philosopher in philosopher_threads:
         philosopher.join()
 
